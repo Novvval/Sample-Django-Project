@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:12.4-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: on-failure
+    env_file:
+      - .env
+    healthcheck:
+      test: pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_USER}
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    ports:
+      - "5432:5432"
+
+  api:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      restart: always
+      env_file:
+        - .env
+      environment:
+        DB_HOST: postgres
+      ports:
+        - "8000:8000"
+      depends_on:
+        - postgres
+        - migrations
+
+  migrations:
+        build:
+          context: .
+        env_file:
+          - .env
+        environment:
+          DB_HOST: postgres
+        depends_on:
+          - postgres
+        command: python manage.py migrate
+
+volumes:
+  postgres_data:
