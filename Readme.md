@@ -2,7 +2,7 @@
 
 1. Клонировать репозиторий:
 ```
-git clone <ссылка>
+git clone https://github.com/Novvval/test_project/
 ```
 2. Создать файл .env с переменными по примеру env.example
 3. Включить контейнер с базой и api:
